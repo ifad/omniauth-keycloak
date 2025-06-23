@@ -1,4 +1,3 @@
-require 'omniauth'
 require 'omniauth-oauth2'
 require 'json/jwt'
 require 'uri'
