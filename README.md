@@ -2,6 +2,7 @@
 
 [![Gem Version](https://badge.fury.io/rb/omniauth-keycloak.svg)](https://badge.fury.io/rb/omniauth-keycloak)
 [![Ruby specs](https://github.com/ccrockett/omniauth-keycloak/actions/workflows/ci.yml/badge.svg)](https://github.com/ccrockett/omniauth-keycloak/actions/workflows/ci.yml)
+[![RuboCop](https://github.com/ccrockett/omniauth-keycloak/actions/workflows/rubocop.yml/badge.svg)](https://github.com/ccrockett/omniauth-keycloak/actions/workflows/rubocop.yml)
 
 ## Installation
 
