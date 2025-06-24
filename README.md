@@ -37,8 +37,10 @@ Here's a quick example, adding the middleware to a Rails app in `config/initiali
 
 ```ruby
 Rails.application.config.middleware.use OmniAuth::Builder do
-  provider :keycloak_openid, 'Example-Client', '19cca35f-dddd-473a-bdd5-03f00d61d884',
-    client_options: {site: 'https://example.keycloak-url.com', realm: 'example-realm'},
+  provider :keycloak_openid,
+    'Client-ID',
+    'client-secret',
+    client_options: { site: 'https://keycloak.example.com', realm: 'example-realm' },
     name: 'keycloak'
 end
 ```
@@ -53,9 +55,9 @@ Rails.application.config.middleware.use OmniAuth::Builder do
     organization = Organization.find_by(host: request.host)
     provider_config = organization.enabled_omniauth_providers[:keycloakopenid]
 
-    env["omniauth.strategy"].options[:client_id] = provider_config[:client_id]
-    env["omniauth.strategy"].options[:client_secret] = provider_config[:client_secret]
-    env["omniauth.strategy"].options[:client_options] = { site: provider_config[:site],  realm: provider_config[:realm] }
+    env['omniauth.strategy'].options[:client_id] = provider_config[:client_id]
+    env['omniauth.strategy'].options[:client_secret] = provider_config[:client_secret]
+    env['omniauth.strategy'].options[:client_options] = { site: provider_config[:site], realm: provider_config[:realm] }
   end
 
   Rails.application.config.middleware.use OmniAuth::Builder do
@@ -77,7 +79,11 @@ class User < ApplicationRecord
 end
 
 # config/initializers/devise.rb
-config.omniauth :keycloak_openid, "Example-Client-Name", "example-secret-if-configured", client_options: { site: "https://example.keycloak-url.com", realm: "example-realm" }, :strategy_class => OmniAuth::Strategies::KeycloakOpenId
+config.omniauth :keycloak_openid,
+                'Client-ID',
+                'client-secret',
+                client_options: { site: 'https://keycloak.example.com', realm: 'example-realm' },
+                strategy_class: OmniAuth::Strategies::KeycloakOpenId
 
 # Below controller assumes callback route configuration following
 # in config/routes.rb
@@ -89,12 +95,12 @@ end
 # app/controllers/users/omniauth_callbacks_controller.rb
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   def keycloakopenid
-    Rails.logger.debug(request.env["omniauth.auth"])
-    @user = User.from_omniauth(request.env["omniauth.auth"])
+    Rails.logger.debug(request.env['omniauth.auth'])
+    @user = User.from_omniauth(request.env['omniauth.auth'])
     if @user.persisted?
       sign_in_and_redirect @user, event: :authentication
     else
-      session["devise.keycloakopenid_data"] = request.env["omniauth.auth"]
+      session['devise.keycloakopenid_data'] = request.env['omniauth.auth']
       redirect_to new_user_registration_url
     end
   end
@@ -103,7 +109,6 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     redirect_to root_path
   end
 end
-
 ```
 
 ## Configuration
@@ -111,8 +116,10 @@ end
   This gem tries to get the keycloak configuration from `"#{site}/auth/realms/#{realm}/.well-known/openid-configuration"`. If your keycloak server has been setup to use a different "root" url other than `/auth` then you need to pass in the `base_url` option when setting up the gem:
     ```ruby
     Rails.application.config.middleware.use OmniAuth::Builder do
-      provider :keycloak_openid, 'Example-Client', '19cca35f-dddd-473a-bdd5-03f00d61d884',
-        client_options: {site: 'https://example.keycloak-url.com', realm: 'example-realm', base_url: '/authorize'},
+      provider :keycloak_openid,
+        'Client-ID',
+        'client-secret',
+        client_options: { site: 'https://keycloak.example.com', realm: 'example-realm', base_url: '/authorize' },
         name: 'keycloak'
     end
     ```
