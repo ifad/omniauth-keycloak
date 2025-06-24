@@ -50,9 +50,3 @@ Style/Documentation:
     - 'spec/**/*'
     - 'test/**/*'
     - 'lib/omniauth/strategies/keycloak-openid.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: AllowHeredoc, AllowURI, AllowQualifiedName, URISchemes, IgnoreCopDirectives, AllowedPatterns, SplitStrings.
-# URISchemes: http, https
-Layout/LineLength:
-  Max: 126

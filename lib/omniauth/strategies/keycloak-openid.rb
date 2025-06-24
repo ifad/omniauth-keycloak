@@ -75,7 +75,8 @@ module OmniAuth
         site = options.client_options[:site]
         return unless %r{/auth$}.match?(site)
 
-        raise ConfigurationError, "Keycloak site parameter should not include /auth part, only domain. Current value: #{site}"
+        raise ConfigurationError,
+              "Keycloak site parameter should not include /auth part, only domain. Current value: #{site}"
       end
 
       def log_config(config_json)
