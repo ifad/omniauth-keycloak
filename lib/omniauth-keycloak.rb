@@ -1,4 +1,4 @@
 # frozen_string_literal: true
 
-require 'keycloak/version'
-require 'omniauth/strategies/keycloak-openid'
+require_relative 'keycloak/version'
+require_relative 'omniauth/strategies/keycloak-openid'
