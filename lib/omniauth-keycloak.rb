@@ -1,2 +1,2 @@
-require "keycloak/version"
-require "omniauth/strategies/keycloak-openid"
+require 'keycloak/version'
+require 'omniauth/strategies/keycloak-openid'
