@@ -6,7 +6,7 @@ require 'uri'
 
 module OmniAuth
   module Strategies
-    class KeycloakOpenId < OmniAuth::Strategies::OAuth2
+    class Keycloak < OmniAuth::Strategies::OAuth2
       class Error < RuntimeError; end
       class ConfigurationError < Error; end
       class IntegrationError < Error; end
@@ -127,8 +127,6 @@ module OmniAuth
         jwks = JSON::JWK::Set.new(@certs)
         JSON::JWT.decode id_token_string, jwks
       end
-
-      OmniAuth.config.add_camelization('keycloak_openid', 'KeycloakOpenId')
     end
   end
 end
