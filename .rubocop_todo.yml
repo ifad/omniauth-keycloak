@@ -31,12 +31,6 @@ Naming/FileName:
     - 'lib/omniauth-keycloak.rb'
     - 'lib/omniauth/strategies/keycloak-openid.rb'
 
-# Configuration parameters: EnforcedStyle, IgnoreSharedExamples.
-# SupportedStyles: always, named_only
-RSpec/NamedSubject:
-  Exclude:
-    - 'spec/omniauth/strategies/keycloak_spec.rb'
-
 # Configuration parameters: Include, CustomTransform, IgnoreMethods, IgnoreMetadata.
 # Include: **/*_spec.rb
 RSpec/SpecFilePathFormat:
