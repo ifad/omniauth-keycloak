@@ -20,15 +20,6 @@ Or install it yourself as:
 
     $ gem install omniauth-keycloak
 
-## Use with Keycloak >= 17 (Quarkus distribution)
-In version 17 of Keycloak, `/auth` was removed from the default context path. (See Issue [#29](https://github.com/ccrockett/omniauth-keycloak/issues/29))
-In order to reduce breaking existing user's setup, this gem assumes `/auth` as the default context.
-__So if you want to use Keycloak 17 or greater then you must do one of the following:__
-
-1. Pass in `--http-relative-path '/auth'` option with the keycloak start command
-2. Pass in a empty string for you base_url client_option:
-  `client_options: {base_url: '', site: 'https://example.keycloak-url.com', realm: 'example-realm'}`
-
 ## Usage
 
 `OmniAuth::Strategies::Keycloak` is simply a Rack middleware. Read the OmniAuth docs for detailed instructions: https://github.com/intridea/omniauth.
@@ -111,13 +102,13 @@ end
 
 ## Configuration
   * __Base Url other than /auth__
-  This gem tries to get the keycloak configuration from `"#{site}/auth/realms/#{realm}/.well-known/openid-configuration"`. If your keycloak server has been setup to use a different "root" url other than `/auth` then you need to pass in the `base_url` option when setting up the gem:
+  This gem tries to get the keycloak configuration from `"#{site}/realms/#{realm}/.well-known/openid-configuration"`. If your keycloak server has been setup to use a different "root" url then you need to pass in the `base_url` option when setting up the gem:
     ```ruby
     Rails.application.config.middleware.use OmniAuth::Builder do
       provider :keycloak,
         'Client-ID',
         'client-secret',
-        client_options: { site: 'https://keycloak.example.com', realm: 'example-realm', base_url: '/authorize' },
+        client_options: { site: 'https://keycloak.example.com', realm: 'example-realm' },
         name: 'keycloak'
     end
     ```
