@@ -63,7 +63,7 @@ module OmniAuth
       end
 
       def auth_url_base
-        return '/auth' unless options.client_options[:base_url]
+        return '' unless options.client_options[:base_url]
 
         base_url = options.client_options[:base_url]
         return base_url if base_url == '' || base_url[0] == '/'
