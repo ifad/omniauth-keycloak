@@ -9,7 +9,7 @@ if ENV['CI'] || ENV['COVERAGE']
   end
 end
 
-require 'omniauth-keycloak'
+require 'omniauth/keycloak'
 require 'webmock/rspec'
 
 OmniAuth.config.logger = Logger.new(File::NULL)

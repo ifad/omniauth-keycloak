@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require File.expand_path('lib/keycloak/version', __dir__)
+require File.expand_path('lib/omniauth/keycloak/version', __dir__)
 
 Gem::Specification.new do |spec|
   spec.name          = 'omniauth-keycloak'
