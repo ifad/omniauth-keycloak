@@ -29,6 +29,6 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 2.6'
 
   spec.add_dependency 'faraday'
-  spec.add_dependency 'json-jwt', '> 1.13.0'
-  spec.add_dependency 'omniauth-oauth2', '>= 1.7', '< 1.9'
+  spec.add_dependency 'json-jwt'
+  spec.add_dependency 'omniauth-oauth2'
 end

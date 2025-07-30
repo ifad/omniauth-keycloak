@@ -108,8 +108,7 @@ end
       provider :keycloak,
         'Client-ID',
         'client-secret',
-        client_options: { site: 'https://keycloak.example.com', realm: 'example-realm' },
-        name: 'keycloak'
+        client_options: { site: 'https://keycloak.example.com', realm: 'example-realm' }
     end
     ```
   * __Pass params from request thru to Keycloak__
