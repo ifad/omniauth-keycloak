@@ -29,9 +29,9 @@ Here's a quick example, adding the middleware to a Rails app in `config/initiali
 ```ruby
 Rails.application.config.middleware.use OmniAuth::Builder do
   provider :keycloak,
-    'Client-ID',
+    'client-id',
     'client-secret',
-    client_options: { site: 'https://keycloak.example.com', realm: 'example-realm' }
+    client_options: { site: 'https://keycloak.example.org', realm: 'example-realm' }
 end
 ```
 This will allow a POST request to `auth/keycloak` since the name is set to keycloak
@@ -70,9 +70,9 @@ end
 
 # config/initializers/devise.rb
 config.omniauth :keycloak,
-                'Client-ID',
+                'client-id',
                 'client-secret',
-                client_options: { site: 'https://keycloak.example.com', realm: 'example-realm' }
+                client_options: { site: 'https://keycloak.example.org', realm: 'example-realm' }
 
 # Below controller assumes callback route configuration following
 # in config/routes.rb
@@ -106,9 +106,9 @@ end
     ```ruby
     Rails.application.config.middleware.use OmniAuth::Builder do
       provider :keycloak,
-        'Client-ID',
+        'client-id',
         'client-secret',
-        client_options: { site: 'https://keycloak.example.com', realm: 'example-realm' }
+        client_options: { site: 'https://keycloak.example.org', realm: 'example-realm' }
     end
     ```
   * __Pass params from request thru to Keycloak__

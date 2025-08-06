@@ -20,6 +20,9 @@ AllCops:
     - tmp/**/*
     - vendor/**/*
 
+RSpec/MultipleMemoizedHelpers:
+  Max: 10
+
 RSpec/NestedGroups:
   Max: 5
 
