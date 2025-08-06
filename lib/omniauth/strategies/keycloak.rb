@@ -83,12 +83,6 @@ module OmniAuth
         }
       end
 
-      def raw_info
-        id_token_string = access_token.token
-        jwks = JSON::JWK::Set.new(@certs)
-        JSON::JWT.decode id_token_string, jwks
-      end
-
       protected
 
       def build_access_token
@@ -127,6 +121,15 @@ module OmniAuth
         log :debug, "Userinfo endpoint: #{@userinfo_endpoint}"
         log :debug, "Authorize url: #{@authorize_url}"
         log :debug, "Token url: #{@token_url}"
+      end
+
+      def raw_info
+        @raw_info ||= decode_token(access_token.token)
+      end
+
+      def decode_token(token_string)
+        jwks = JSON::JWK::Set.new(@certs)
+        JSON::JWT.decode token_string, jwks
       end
     end
   end
