@@ -30,5 +30,5 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'faraday'
   spec.add_dependency 'json-jwt'
-  spec.add_dependency 'omniauth-oauth2'
+  spec.add_dependency 'omniauth-oauth2', '>= 1.8'
 end
