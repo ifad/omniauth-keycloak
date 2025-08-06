@@ -58,42 +58,6 @@ module OmniAuth
         end
       end
 
-      def auth_url_base
-        return '' unless options.client_options[:base_url]
-
-        base_url = options.client_options[:base_url]
-        return base_url if base_url == '' || base_url[0] == '/'
-
-        raise ConfigurationError, "Keycloak base_url option should start with '/'. Current value: #{base_url}"
-      end
-
-      def prevent_site_option_mistake
-        site = options.client_options[:site]
-        return unless %r{/auth$}.match?(site)
-
-        raise ConfigurationError,
-              "Keycloak site parameter should not include /auth part, only domain. Current value: #{site}"
-      end
-
-      def log_config(config_json)
-        log_keycloak_config = options.client_options.fetch(:log_keycloak_config, false)
-        log :debug, 'Successfully got Keycloak config'
-        log :debug, "Keycloak config: #{config_json}" if log_keycloak_config
-        log :debug, "Certs endpoint: #{@certs_endpoint}"
-        log :debug, "Userinfo endpoint: #{@userinfo_endpoint}"
-        log :debug, "Authorize url: #{@authorize_url}"
-        log :debug, "Token url: #{@token_url}"
-      end
-
-      def build_access_token
-        verifier = request.params['code']
-        client.auth_code.get_token(
-          verifier,
-          { redirect_uri: callback_url.gsub(/\?.+\Z/, '') }.merge(token_params.to_hash(symbolize_keys: true)),
-          deep_symbolize(options.auth_token_params)
-        )
-      end
-
       def request_phase
         options.authorize_options.each do |key|
           options[key] = request.params[key.to_s] if options[key].nil?
@@ -123,6 +87,46 @@ module OmniAuth
         id_token_string = access_token.token
         jwks = JSON::JWK::Set.new(@certs)
         JSON::JWT.decode id_token_string, jwks
+      end
+
+      protected
+
+      def build_access_token
+        verifier = request.params['code']
+        client.auth_code.get_token(
+          verifier,
+          { redirect_uri: callback_url.gsub(/\?.+\Z/, '') }.merge(token_params.to_hash(symbolize_keys: true)),
+          deep_symbolize(options.auth_token_params)
+        )
+      end
+
+      private
+
+      def auth_url_base
+        return '' unless options.client_options[:base_url]
+
+        base_url = options.client_options[:base_url]
+        return base_url if base_url == '' || base_url[0] == '/'
+
+        raise ConfigurationError, "Keycloak base_url option should start with '/'. Current value: #{base_url}"
+      end
+
+      def prevent_site_option_mistake
+        site = options.client_options[:site]
+        return unless %r{/auth$}.match?(site)
+
+        raise ConfigurationError,
+              "Keycloak site parameter should not include /auth part, only domain. Current value: #{site}"
+      end
+
+      def log_config(config_json)
+        log_keycloak_config = options.client_options.fetch(:log_keycloak_config, false)
+        log :debug, 'Successfully got Keycloak config'
+        log :debug, "Keycloak config: #{config_json}" if log_keycloak_config
+        log :debug, "Certs endpoint: #{@certs_endpoint}"
+        log :debug, "Userinfo endpoint: #{@userinfo_endpoint}"
+        log :debug, "Authorize url: #{@authorize_url}"
+        log :debug, "Token url: #{@token_url}"
       end
     end
   end
