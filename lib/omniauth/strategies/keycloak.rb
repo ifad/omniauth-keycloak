@@ -39,10 +39,7 @@ module OmniAuth
 
           log_config(json)
 
-          options.client_options.merge!({
-                                          authorize_url: @authorize_url,
-                                          token_url: @token_url
-                                        })
+          options.client_options.merge!({ authorize_url: @authorize_url, token_url: @token_url })
           log :debug, "Going to get certificates. URL: #{@certs_endpoint}"
           certs = Faraday.get @certs_endpoint
           if certs.status == 200
@@ -55,8 +52,7 @@ module OmniAuth
             raise IntegrationError, message if raise_on_failure
           end
         else
-          message = "Keycloak configuration request failed with status: #{response.status}. " \
-                    "URL: #{config_url}"
+          message = "Keycloak configuration request failed with status: #{response.status}. URL: #{config_url}"
           log :error, message
           raise IntegrationError, message if raise_on_failure
         end
@@ -91,10 +87,11 @@ module OmniAuth
 
       def build_access_token
         verifier = request.params['code']
-        client.auth_code.get_token(verifier,
-                                   { redirect_uri: callback_url.gsub(/\?.+\Z/, '') }
-                                   .merge(token_params.to_hash(symbolize_keys: true)),
-                                   deep_symbolize(options.auth_token_params))
+        client.auth_code.get_token(
+          verifier,
+          { redirect_uri: callback_url.gsub(/\?.+\Z/, '') }.merge(token_params.to_hash(symbolize_keys: true)),
+          deep_symbolize(options.auth_token_params)
+        )
       end
 
       def request_phase
