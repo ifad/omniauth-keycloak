@@ -77,10 +77,16 @@ module OmniAuth
       end
 
       extra do
-        {
-          'raw_info' => raw_info,
-          'id_token' => access_token['id_token']
+        result = {
+          'raw_info' => raw_info
         }
+
+        if (id_token = access_token['id_token'])
+          result['id_token'] = id_token
+          result['id_info'] = decode_token(id_token)
+        end
+
+        result
       end
 
       protected
