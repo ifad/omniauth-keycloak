@@ -12,3 +12,5 @@
 spec/examples.txt
 
 Gemfile.lock
+
+.byebug_history
