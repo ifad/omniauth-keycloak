@@ -8,15 +8,16 @@ git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 gemspec
 
 gem 'bundler'
+gem 'byebug'
 gem 'rake'
 gem 'rspec'
 gem 'simplecov'
 gem 'webmock'
 
 if RUBY_VERSION >= '2.7'
-  gem 'rubocop', '1.77.0'
+  gem 'rubocop', '1.81.7'
   gem 'rubocop-packaging', '0.6.0'
-  gem 'rubocop-performance', '1.25.0'
+  gem 'rubocop-performance', '1.26.1'
   gem 'rubocop-rake', '0.7.1'
-  gem 'rubocop-rspec', '3.6.0'
+  gem 'rubocop-rspec', '3.7.0'
 end

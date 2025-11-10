@@ -28,7 +28,7 @@ module OmniAuth
         config_url = URI.join(site, "#{auth_url_base}/realms/#{realm}/.well-known/openid-configuration")
 
         log :debug, "Going to get Keycloak configuration. URL: #{config_url}"
-        response = Faraday.get config_url
+        response = client.connection.get config_url
         if response.status == 200
           json = JSON.parse(response.body)
 
@@ -41,7 +41,7 @@ module OmniAuth
 
           options.client_options.merge!({ authorize_url: @authorize_url, token_url: @token_url })
           log :debug, "Going to get certificates. URL: #{@certs_endpoint}"
-          certs = Faraday.get @certs_endpoint
+          certs = client.connection.get @certs_endpoint
           if certs.status == 200
             json = JSON.parse(certs.body)
             @certs = json['keys']
