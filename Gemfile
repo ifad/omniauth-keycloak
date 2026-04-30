@@ -9,6 +9,8 @@ gemspec
 
 gem 'bundler'
 gem 'byebug'
+gem 'rack-session'
+gem 'rack-test'
 gem 'rake'
 gem 'rspec'
 gem 'simplecov'

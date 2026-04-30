@@ -32,3 +32,6 @@ RSpec/SpecFilePathFormat:
 
 Style/NumericPredicate:
   Enabled: false
+
+RSpec/ExampleLength:
+  CountAsOne: [array, hash, heredoc, method_call]
