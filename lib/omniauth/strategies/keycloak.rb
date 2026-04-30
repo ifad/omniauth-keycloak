@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'omniauth-oauth2'
-require 'json/jwt'
+require 'jwt'
 require 'uri'
 
 module OmniAuth
@@ -32,6 +32,7 @@ module OmniAuth
         if response.status == 200
           json = JSON.parse(response.body)
 
+          @issuer = json['issuer']
           @certs_endpoint = json['jwks_uri']
           @userinfo_endpoint = json['userinfo_endpoint']
           @authorize_url = URI(json['authorization_endpoint']).path
@@ -134,8 +135,17 @@ module OmniAuth
       end
 
       def decode_token(token_string)
-        jwks = JSON::JWK::Set.new(@certs)
-        JSON::JWT.decode token_string, jwks
+        jwks = JWT::JWK::Set.new(@certs)
+        tok  = JWT::EncodedToken.new(token_string)
+        tok.verify!(
+          signature: {
+            algorithm: tok.header.fetch('alg'),
+            key_finder: JWT::JWK::KeyFinder.new(jwks: jwks)
+          },
+          claims: [:iat, :exp, { iss: @issuer }]
+        )
+
+        tok.payload
       end
     end
   end
