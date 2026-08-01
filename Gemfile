@@ -14,10 +14,10 @@ gem 'rspec'
 gem 'simplecov'
 gem 'webmock'
 
-if RUBY_VERSION >= '2.7'
-  gem 'rubocop', '1.81.7'
+if RUBY_VERSION >= '3.2'
+  gem 'rubocop', '1.88.2'
   gem 'rubocop-packaging', '0.6.0'
   gem 'rubocop-performance', '1.26.1'
   gem 'rubocop-rake', '0.7.1'
-  gem 'rubocop-rspec', '3.7.0'
+  gem 'rubocop-rspec', '3.10.2'
 end
