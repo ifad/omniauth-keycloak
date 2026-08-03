@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'omniauth-oauth2'
-require 'json/jwt'
+require 'jwt'
 require 'uri'
 
 module OmniAuth
@@ -18,44 +18,9 @@ module OmniAuth
 
         return unless (@authorize_url.nil? || @token_url.nil?) && !OmniAuth.config.test_mode
 
-        prevent_site_option_mistake
-
-        realm = options.client_options[:realm].nil? ? options.client_id : options.client_options[:realm]
-        site = options.client_options[:site]
-
-        raise_on_failure = options.client_options.fetch(:raise_on_failure, false)
-
-        config_url = URI.join(site, "#{auth_url_base}/realms/#{realm}/.well-known/openid-configuration")
-
-        log :debug, "Going to get Keycloak configuration. URL: #{config_url}"
-        response = client.connection.get config_url
-        if response.status == 200
-          json = JSON.parse(response.body)
-
-          @certs_endpoint = json['jwks_uri']
-          @userinfo_endpoint = json['userinfo_endpoint']
-          @authorize_url = URI(json['authorization_endpoint']).path
-          @token_url = URI(json['token_endpoint']).path
-
-          log_config(json)
-
-          options.client_options.merge!({ authorize_url: @authorize_url, token_url: @token_url })
-          log :debug, "Going to get certificates. URL: #{@certs_endpoint}"
-          certs = client.connection.get @certs_endpoint
-          if certs.status == 200
-            json = JSON.parse(certs.body)
-            @certs = json['keys']
-            log :debug, "Successfully got certificate. Certificate length: #{@certs.length}"
-          else
-            message = "Couldn't get certificate. URL: #{@certs_endpoint}"
-            log :error, message
-            raise IntegrationError, message if raise_on_failure
-          end
-        else
-          message = "Keycloak configuration request failed with status: #{response.status}. URL: #{config_url}"
-          log :error, message
-          raise IntegrationError, message if raise_on_failure
-        end
+        prevent_site_option_mistake!
+        fetch_openid_configuration!
+        fetch_certificates!
       end
 
       def request_phase
@@ -102,6 +67,53 @@ module OmniAuth
 
       private
 
+      def fetch_openid_configuration!
+        realm = options.client_options[:realm].nil? ? options.client_id : options.client_options[:realm]
+        site = options.client_options[:site]
+        config_url = URI.join(site, "#{auth_url_base}/realms/#{realm}/.well-known/openid-configuration")
+
+        log :debug, "Going to get Keycloak configuration. URL: #{config_url}"
+        response = client.connection.get config_url
+        if response.status == 200
+          json = JSON.parse(response.body)
+
+          @issuer = json['issuer']
+          @certs_endpoint = json['jwks_uri']
+          @userinfo_endpoint = json['userinfo_endpoint']
+          @authorize_url = URI(json['authorization_endpoint']).path
+          @token_url = URI(json['token_endpoint']).path
+
+          log_config(json)
+
+          options.client_options.merge!({ authorize_url: @authorize_url, token_url: @token_url })
+        else
+          log_and_raise_error! "Keycloak configuration request failed with status: #{response.status}. URL: #{config_url}"
+        end
+      end
+
+      def fetch_certificates!
+        return log_and_raise_error! "Couldn't get certificate. URL missing" unless @certs_endpoint
+
+        log :debug, "Going to get certificates. URL: #{@certs_endpoint}"
+        certs = client.connection.get @certs_endpoint
+        if certs.status == 200
+          json = JSON.parse(certs.body)
+          @certs = json['keys']
+          log :debug, "Successfully got certificate. Certificate length: #{@certs.length}"
+        else
+          log_and_raise_error! "Couldn't get certificate. URL: #{@certs_endpoint}"
+        end
+      end
+
+      def log_and_raise_error!(message)
+        log :error, message
+        raise IntegrationError, message if raise_on_failure?
+      end
+
+      def raise_on_failure?
+        options.client_options.fetch(:raise_on_failure, false)
+      end
+
       def auth_url_base
         return '' unless options.client_options[:base_url]
 
@@ -111,7 +123,7 @@ module OmniAuth
         raise ConfigurationError, "Keycloak base_url option should start with '/'. Current value: #{base_url}"
       end
 
-      def prevent_site_option_mistake
+      def prevent_site_option_mistake!
         site = options.client_options[:site]
         return unless %r{/auth$}.match?(site)
 
@@ -134,8 +146,17 @@ module OmniAuth
       end
 
       def decode_token(token_string)
-        jwks = JSON::JWK::Set.new(@certs)
-        JSON::JWT.decode token_string, jwks
+        jwks = JWT::JWK::Set.new(@certs)
+        tok  = JWT::EncodedToken.new(token_string)
+        tok.verify!(
+          signature: {
+            algorithm: tok.header.fetch('alg'),
+            key_finder: JWT::JWK::KeyFinder.new(jwks: jwks)
+          },
+          claims: [:iat, :exp, { iss: @issuer }]
+        )
+
+        tok.payload
       end
     end
   end
